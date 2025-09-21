@@ -1,0 +1,245 @@
+e<!DOCTYPE html>
+
+<html lang="zh" style="height:100%; width:100%;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>文本处理</title>
+       </head>
+      <body>
+        <div style="text-align:center;margin-top: 50px;">
+          <textarea name="t1" id="t1" cols="50" rows="30"></textarea>
+          <textarea name="t2" id="t2" cols="50" rows="30"></textarea>
+          <textarea name="t3" id="t3" cols="50" rows="30"></textarea>
+          <div style="margin-top: 40px;">
+            <div style="margin-bottom: 10px;">
+              <input id="num" style="margin-left: 225px;width:100px;height: 30px; font-size: 14px; outline:none;padding-left: 5px;" placeholder="删除第几列"/>
+              <input id="num2" style="margin-left: 28px;width:100px;height: 30px; font-size: 14px; outline:none;padding-left: 5px;" placeholder="数组取第几列"/>
+            </div>
+            
+            <button id="btn" style="width:120px;height: 60px; font-size: 30px; margin-right: 30px;">合并</button>
+            <button id="btn2_1" style="width:150px;height: 60px; font-size: 30px;margin-right: 30px;">筛选相同</button>
+            <button id="btn2_2" style="width:150px;height: 60px; font-size: 30px;margin-right: 30px;">筛选不同</button>
+            <button id="btn3" style="width:120px;height: 60px; font-size: 30px;margin-right: 20px;">切除</button>
+            <button id="btn4" style="width:120px;height: 60px; font-size: 30px;">数组</button>
+            <button id="btn5" style="width:120px;height: 60px; font-size: 30px;margin-left: 20px;">去重</button>
+            <button id="btn6" style="width:120px;height: 60px; font-size: 30px;margin-left: 20px;">配.地址</button>
+          </div>
+
+          <div style="margin-top: 40px;">
+            <input id="copy" style="margin-left: 220px;width:100px;height: 40px; font-size: 14px; outline:none;padding-left: 5px;" placeholder="复制多少行"/>
+            <button id="btn7" style="width:120px;height: 60px; font-size: 30px; margin-right: 30px;">复制</button>
+          </div>
+        </div>
+            
+      </body>
+      
+      </html>
+
+      <script>
+        var flag=false;
+        var str="";
+
+        // 合并(多个文本框内容的对应行拼接成新文本，如果只有前两个文本框合并，结果输出到第三个文本框；如果需要合并三个文本框内容，则结果输出到控制台)
+        var btn = document.getElementById("btn");
+        btn.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var t3 = document.getElementById("t3");
+          var at1 = t1.value.split("\n");
+          var at2 = t2.value.split("\n");
+          var at3 = t3.value.split("\n");
+          str="";
+          t3.value="";
+          if(at3[0]!=""){flag=true;}
+
+          for(var i=0; i<at1.length;i++){
+            if(flag){
+              str+=at1[i]+"----"+at2[i]+"----"+at3[i]+"\n";
+            }else{
+              str+=at1[i]+"----"+at2[i]+"\n";
+            }
+          }
+          if(flag){
+            console.log(str);
+          }else{
+            t3.value=str;
+          }
+        }
+
+        // 匹配(第二个文本框去匹配第一个文本框的对应行，匹配到则输出第二个文本框的完整内容行到第三个文本框)
+        // 1、相同
+        var btn2_1 = document.getElementById("btn2_1");
+        btn2_1.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var t3 = document.getElementById("t3");
+          var at1 = t1.value.split("\n");
+          var at2 = t2.value.split("\n");
+          str="";
+          t3.value="";
+          for(var i=0; i<at1.length;i++){
+            for(var j=0; j<at2.length;j++){
+              if(at1[i].split("----")[0].toLowerCase()==at2[j].split("----")[0].toLowerCase()){ //匹配完全相同文本
+              // if(at2[j].split("----")[0].indexOf(at1[i])!=-1){ //匹配包含文本
+                str+=at2[j]+"\n";
+                break;
+              }
+            }
+          }
+          t3.value=str.slice(0,-1);
+        }
+
+        // 2、不同
+        var btn2_2 = document.getElementById("btn2_2");
+        btn2_2.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var t3 = document.getElementById("t3");
+          var at1 = t1.value.split("\n");
+          var at2 = t2.value.split("\n");
+          str="";
+          t3.value="";
+          for(var i=0; i<at1.length;i++){
+            for(var j=0; j<at2.length;j++){
+              if(at1[i].split("----")[0].toLowerCase()==at2[j].split("----")[0].toLowerCase()){ //匹配不完全相同文本
+                flag=true;
+                break;
+              }
+            }
+            if(!flag){
+              str+=at1[i]+"\n";
+            }
+            flag=false;
+          }
+          t3.value=str.slice(0,-1);
+        }
+
+         // 切除(切除第一个文本框内容的多余列)
+        var btn3 = document.getElementById("btn3");
+        btn3.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var num = Math.floor(document.getElementById("num").value);
+          var at1 = t1.value.split("\n");
+          str="";
+          t2.value="";
+
+          for(var i=0; i<at1.length;i++){
+
+            if(num>at1[i].split("----").length+1 || num<1){
+              str="切割列数不合理！";
+              break;
+            }
+
+            if(num==1){
+              for(var j=1; j<at1[i].split("----").length; j++){
+                if(j<at1[i].split("----").length-1){
+                  var four = "----";
+                }else{
+                  var four = "";
+                }
+                str+=at1[i].split("----")[j]+four;
+              }
+            }
+
+            if(num==at1[i].split("----").length){
+              for(var j=0; j<at1[i].split("----").length-1; j++){
+                if(j<at1[i].split("----").length-2){
+                  var four = "----";
+                }else{
+                  var four = "";
+                }
+                str+=at1[i].split("----")[j]+four;
+              }
+            }
+
+            if(num>1 && num<at1[i].split("----").length){
+              for(var j=0; j<at1[i].split("----").length; j++){
+                if(j<at1[i].split("----").length-1){
+                  var four = "----";
+                }else{
+                  var four = "";
+                }
+                if(num!=(j+1)){
+                  str+=at1[i].split("----")[j]+four;
+                }
+              }
+            }
+
+            str+="\n";
+          }
+          t2.value=str.slice(0,-1);
+        }
+
+        // 数组(把第一个文本框的文本转变成数组显示)
+        var btn4 = document.getElementById("btn4");
+        btn4.onclick = function(){
+          var earr = [];
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var at1 = t1.value.split("\n");
+          t2.value="";
+          var num2 = Math.floor(document.getElementById("num2").value);
+          for(var i=0; i<at1.length;i++){
+            if(num2==1){
+              var item = '"'+at1[i].split("----")[0]+'"';
+            }
+            if(num2==2){
+              var item = '"'+at1[i].split("----")[1]+'"';
+            }
+            if(num2==""){
+              var item = '"'+at1[i]+'"';
+            }
+            earr.push(item);
+          }
+          t2.value="["+earr+"]";
+        }
+
+        // 去重
+        var btn5 = document.getElementById("btn5");
+        btn5.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var at1 = t1.value.split("\n");
+          t2.value="";
+          str = unique(at1).join(',').replace(/,/g,"\n");
+          t2.value=str;
+        }
+        function unique(arr) {
+          return Array.from(new Set(arr))
+        }
+
+        // 通过前几位和后几位匹配出完整地址
+        var btn6 = document.getElementById("btn6");
+        btn6.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var t3 = document.getElementById("t3");
+          var at1 = t1.value.split("\n");
+          var at2 = t2.value.split("\n");
+          str="";
+          t3.value="";
+          for(var i=0; i<at1.length;i++){
+            for(var j=0; j<at2.length;j++){
+              if(at1[i].slice(0,6).toLowerCase()==at2[j].split('----')[0].slice(0,6).toLowerCase() && at1[i].slice(-4).toLowerCase()==at2[j].split('----')[0].slice(-4).toLowerCase()){
+                str+=at2[j].toLowerCase()+"\n";
+                break;
+              }
+            }
+          }
+          t3.value=str;
+        }
+
+        // 复制XX行
+        var btn7 = document.getElementById("btn7");
+        btn7.onclick = function(){
+          var t1 = document.getElementById("t1");
+          var t2 = document.getElementById("t2");
+          var at1 = t1.value;
+          t2.value="";
+          var copy = Math.floor(document.getElementById("copy").value);
+          for(var i=0; i<copy; i++){
+            str+=at1+'\n';
+          }
+          t2.value=str.slice(0,-1);
+        }
+
+      </script>
